@@ -1,0 +1,39 @@
+version: '3.9'
+
+services:
+  channel_server:
+    build:
+      context: ./channel_server
+    container_name: channel_server
+    ports:
+      - "5000:5000"
+
+  transmitter1:
+    build:
+      context: ./transmitter1
+    container_name: transmitter1
+    depends_on:
+      - channel_server
+    volumes:
+      - ./logs:/app/logs  # compartilha a pasta de logs
+
+  transmitter2:
+    build:
+      context: ./transmitter2
+    container_name: transmitter2
+    depends_on:
+      - channel_server
+    volumes:
+      - ./logs:/app/logs  # compartilha a pasta de logs
+
+  visualizer:
+    build:
+      context: ./visualizer
+    container_name: visualizer
+    depends_on:
+      - transmitter1
+      - transmitter2
+    ports:
+      - "8501:8501"
+    volumes:
+      - ./logs:/app/logs  # acessa os logs gerados pelos transmissores
